@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<!--
+  Copyright © 2026 CV SATRIA TEKNOLOGI. All rights reserved.
+  https://cvsatriateknologi.com
+
+  500 — Internal Server Error page
+  Self-contained on purpose: an error page is served from arbitrary URLs and
+  often while the app server is unhealthy, so CSS/JS are inlined. Only GSAP
+  and fonts come from CDNs, and the page stays fully usable if either fails.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b0b0c">
+  <title>500 — Something broke on our end</title>
+  <meta name="description" content="Our server ran into an unexpected problem. Try again in a moment or return to the homepage.">
+
+  <script>
+    // Hide animated elements only when JS is on; un-hide if GSAP never arrives.
+    document.documentElement.classList.add('js');
+    window.addEventListener('load', function () {
+      if (!window.gsap) document.documentElement.classList.remove('js');
+    });
+  </script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&family=JetBrains+Mono:wght@400;500&display=swap">
+
+  <style>
+    /* Copyright © 2026 CV SATRIA TEKNOLOGI. All rights reserved. (cvsatriateknologi.com) */
+
+    /* ---------- Tokens ---------- */
+    :root {
+      --bg: #0b0b0c;
+      --bg-raise: #141416;
+      --ink: #f3f0ea;
+      --ink-2: rgba(243, 240, 234, 0.7);
+      --ink-3: rgba(243, 240, 234, 0.55);
+      --line: rgba(243, 240, 234, 0.12);
+      --line-strong: rgba(243, 240, 234, 0.28);
+      --accent: #ff4b2b;
+      --accent-ink: #160604;
+      --signal: #3fe3c6;
+
+      --sans: "Archivo", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      --mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+      --pad: clamp(16px, 4vw, 48px);
+      --maxw: 1240px;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-io: cubic-bezier(0.7, 0, 0.2, 1);
+
+      color-scheme: dark;
+    }
+
+    /* ---------- Base ---------- */
+    *, *::before, *::after { box-sizing: border-box; }
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 1rem;
+      line-height: 1.5;
+      overflow-x: hidden;
+      overflow-x: clip;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    a { color: inherit; }
+    button { font: inherit; color: inherit; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
+    ::selection { background: var(--accent); color: var(--accent-ink); }
+
+    .mono { font-family: var(--mono); font-feature-settings: "zero" 1; }
+    .sr-only {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+    }
+    .skip {
+      position: absolute; left: var(--pad); top: -100px; z-index: 50;
+      padding: 0.7rem 1rem; border-radius: 999px;
+      background: var(--ink); color: var(--bg); font-weight: 600; text-decoration: none;
+    }
+    .skip:focus { top: 12px; }
+
+    /* Elements GSAP reveals start hidden only when JS + GSAP are present. */
+    .js [data-reveal], .js .digit, .js .headline { visibility: hidden; }
+
+    /* ---------- Background stage ---------- */
+    .bg {
+      position: fixed; inset: 0; z-index: 0;
+      overflow: hidden; pointer-events: none;
+      --mx: 50vw; --my: 40vh;
+    }
+    .bg__spot {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(600px circle at var(--mx) var(--my), rgba(255, 75, 43, 0.13), transparent 60%),
+        radial-gradient(1200px 700px at 50% 120%, rgba(63, 227, 198, 0.06), transparent 70%);
+    }
+    .bg__grid {
+      position: absolute; inset: 0;
+      background-image: repeating-linear-gradient(90deg, var(--line) 0 1px, transparent 1px calc(100% / 12));
+      opacity: 0.35;
+      mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+      -webkit-mask-image: linear-gradient(180deg, transparent, #000 20%, #000 80%, transparent);
+    }
+    .bg__grain {
+      position: absolute; inset: -50%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
+      opacity: 0.07;
+      animation: grain 1s steps(6) infinite;
+    }
+    @keyframes grain {
+      0%   { transform: translate(0, 0); }
+      20%  { transform: translate(-6%, 4%); }
+      40%  { transform: translate(4%, -8%); }
+      60%  { transform: translate(-10%, -2%); }
+      80%  { transform: translate(8%, 6%); }
+      100% { transform: translate(0, 0); }
+    }
+
+    .marquees {
+      position: absolute; left: -10%; right: -10%; top: 50%;
+      transform: translateY(-50%) rotate(-7deg);
+    }
+    .marquees__inner { display: grid; gap: clamp(0.25rem, 1.5vw, 1rem); }
+    .marquee { overflow: hidden; white-space: nowrap; }
+    .marquee__track { display: flex; width: max-content; will-change: transform; }
+    .marquee__group {
+      display: flex; align-items: center; flex-shrink: 0;
+      font-size: clamp(3.25rem, 12vw, 10.5rem);
+      line-height: 1;
+      text-transform: uppercase;
+      font-variation-settings: "wght" 800, "wdth" 125;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+    .marquee__group > span { padding-right: 0.35em; }
+    .marquee__group > i {
+      display: inline-block; flex-shrink: 0;
+      width: 0.22em; height: 0.22em; margin-right: 0.35em;
+      border-radius: 50%; background: currentColor;
+    }
+    .marquee--outline .marquee__group { color: transparent; -webkit-text-stroke: 1px rgba(243, 240, 234, 0.09); }
+    .marquee--outline .marquee__group > i { background: rgba(243, 240, 234, 0.09); }
+    .marquee--fill .marquee__group { color: rgba(243, 240, 234, 0.035); }
+    .marquee--accent .marquee__group { color: transparent; -webkit-text-stroke: 1px rgba(255, 75, 43, 0.22); }
+    .marquee--accent .marquee__group > i { background: rgba(255, 75, 43, 0.22); }
+
+    .bg__label {
+      position: absolute; font-family: var(--mono); font-size: 0.6875rem;
+      letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
+      opacity: 0.7;
+      display: none; /* only shown where the side gutters are wide enough */
+    }
+    .bg__label--l { left: var(--pad); bottom: 22%; writing-mode: vertical-rl; transform: rotate(180deg); }
+    .bg__label--r { right: var(--pad); top: 24%; writing-mode: vertical-rl; }
+
+    /* ---------- Top bar ---------- */
+    .topbar {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.75rem 1rem;
+      padding: var(--pad) var(--pad) 0;
+    }
+
+    /* LOGO PLACEHOLDER — swap the inner span for your <img>/<svg>. Box is
+       sized for a typical horizontal wordmark (≈ 3.5:1). */
+    .logo-slot {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: clamp(120px, 14vw, 168px);
+      height: clamp(36px, 4vw, 48px);
+      text-decoration: none;
+      border-radius: 10px;
+    }
+    .logo-slot img, .logo-slot svg { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; }
+    .logo-slot__placeholder {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; height: 100%;
+      border: 1px dashed var(--line-strong);
+      border-radius: inherit;
+      font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink-3);
+      background: repeating-linear-gradient(135deg, transparent 0 8px, rgba(243, 240, 234, 0.03) 8px 9px);
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .logo-slot__placeholder::before {
+      content: ""; width: 0.75rem; height: 0.75rem; border-radius: 3px;
+      border: 1px solid currentColor;
+    }
+    .logo-slot:hover .logo-slot__placeholder { border-color: var(--ink-2); color: var(--ink-2); }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      min-height: 40px; padding: 0 0.95rem 0 0.8rem;
+      border: 1px solid var(--line); border-radius: 999px;
+      background: rgba(20, 20, 22, 0.6);
+      -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+      font-size: 0.8125rem; font-weight: 500; text-decoration: none; color: var(--ink-2);
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .pill:hover { border-color: var(--line-strong); color: var(--ink); }
+    .pill__dot { position: relative; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+    .pill__dot::after {
+      content: ""; position: absolute; inset: -4px; border-radius: 50%;
+      border: 1px solid var(--accent); animation: ping 1.8s var(--ease-out) infinite;
+    }
+    @keyframes ping { from { transform: scale(0.4); opacity: 1; } to { transform: scale(1.6); opacity: 0; } }
+    .pill svg { width: 14px; height: 14px; transition: transform 0.4s var(--ease-out); }
+    .pill:hover svg { transform: translate(2px, -2px); }
+
+    /* ---------- Main stage ---------- */
+    .stage {
+      position: relative; z-index: 1;
+      width: min(100% - 2 * var(--pad), var(--maxw));
+      margin-inline: auto;
+      display: grid; align-content: center;
+      gap: clamp(1.25rem, 3.2vh, 2.75rem);
+      padding-block: clamp(1.25rem, 3.5vh, 3.5rem);
+    }
+
+    .eyebrow {
+      display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+      gap: 0.5rem 0.75rem; margin: 0;
+      font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-3);
+    }
+    .eyebrow__code { color: var(--accent); }
+    .eyebrow__rule { width: clamp(24px, 6vw, 56px); height: 1px; background: var(--line-strong); }
+
+    /* Kinetic 500 */
+    .code {
+      display: flex; justify-content: center; align-items: flex-end;
+      gap: 0.015em;
+      margin: 0;
+      font-size: clamp(6.5rem, 34vw, 22rem);
+      font-size: clamp(6.5rem, min(34vw, 34vh), 22rem);
+      font-size: clamp(6.5rem, min(34vw, 34svh), 22rem);
+      line-height: 0.78;
+      letter-spacing: -0.03em;
+      perspective: 1000px;
+      user-select: none; -webkit-user-select: none;
+    }
+    .digit {
+      --wght: 800; --wdth: 100;
+      position: relative; display: inline-block;
+      font-weight: 800;
+      font-variation-settings: "wght" var(--wght), "wdth" var(--wdth);
+      transform-origin: 50% 100%;
+      padding-bottom: 0.04em;
+    }
+    .digit--hollow {
+      color: transparent;
+      -webkit-text-stroke: max(2px, 0.012em) var(--accent);
+    }
+    .digit::before, .digit::after {
+      content: attr(data-char);
+      position: absolute; inset: 0;
+      -webkit-text-stroke: 0;
+      opacity: var(--glitch, 0);
+      pointer-events: none;
+    }
+    .digit::before {
+      color: var(--accent);
+      transform: translateX(calc(var(--gx, 0px) * -1));
+      clip-path: inset(var(--c1, 10%) 0 var(--c2, 70%) 0);
+    }
+    .digit::after {
+      color: var(--signal);
+      transform: translateX(var(--gx, 0px));
+      clip-path: inset(var(--c3, 55%) 0 var(--c4, 25%) 0);
+      mix-blend-mode: screen;
+    }
+
+    /* Copy + details */
+    .stage__body {
+      display: grid; gap: clamp(1.75rem, 4vw, 3rem);
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center; text-align: center;
+    }
+    .message { display: grid; gap: 1.1rem; justify-items: center; max-width: 40rem; }
+
+    .headline {
+      margin: 0;
+      font-size: clamp(1.75rem, 1.05rem + 2.8vw, 3.5rem);
+      line-height: 1.02;
+      font-weight: 700;
+      font-variation-settings: "wght" 700, "wdth" 85;
+      letter-spacing: -0.025em;
+      text-wrap: balance;
+    }
+    .headline em { font-style: normal; color: var(--accent); }
+    .w { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+    .w > span { display: inline-block; }
+
+    .lede {
+      margin: 0; max-width: 46ch;
+      font-size: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      line-height: 1.6; color: var(--ink-2);
+      text-wrap: pretty;
+    }
+
+    /* Buttons */
+    .actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-top: 0.6rem; }
+    .btn {
+      position: relative; isolation: isolate;
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      min-height: 52px; padding: 0 1.4rem;
+      border: 1px solid var(--line-strong); border-radius: 999px;
+      background: transparent; color: var(--ink);
+      font-size: 0.975rem; font-weight: 600; line-height: 1;
+      font-variation-settings: "wght" 600, "wdth" 100;
+      text-decoration: none; cursor: pointer;
+      overflow: hidden;
+      transition: border-color 0.35s, color 0.35s, background-color 0.35s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn[hidden] { display: none; }
+    .btn::before {
+      content: ""; position: absolute; inset: 0; z-index: -1;
+      background: var(--ink); border-radius: inherit;
+      transform: translateY(101%); transition: transform 0.5s var(--ease-io);
+    }
+    @media (hover: hover) {
+      .btn:hover { color: var(--bg); border-color: var(--ink); }
+      .btn:hover::before { transform: translateY(0); }
+    }
+    .btn--primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+    .btn--primary::before { background: var(--ink); }
+    @media (hover: hover) { .btn--primary:hover { color: var(--bg); border-color: var(--ink); } }
+    .btn:active { transform: scale(0.98); }
+    .btn--ghost { border-color: transparent; color: var(--ink-2); padding-inline: 1rem; }
+    .btn--ghost::before { display: none; }
+    .btn--ghost:hover { color: var(--ink); border-color: var(--line); background: transparent; }
+
+    /* Rolling label: the copy slides up, the duplicate slides in from below. */
+    .btn__label { display: block; overflow: hidden; height: 1.2em; line-height: 1.2em; }
+    .btn__label > span { display: block; transition: transform 0.5s var(--ease-io); }
+    .btn__label > span::after { content: attr(data-text); display: block; }
+    .btn:hover .btn__label > span, .btn:focus-visible .btn__label > span { transform: translateY(-100%); }
+
+    .btn svg { width: 18px; height: 18px; flex-shrink: 0; transition: transform 0.5s var(--ease-io); }
+    .btn:hover .i-arrow { transform: translateX(3px); }
+    .btn:hover .i-retry { transform: rotate(-200deg); }
+    .btn:hover .i-back { transform: translateX(-3px); }
+
+    /* Error details card */
+    .ref {
+      width: 100%; max-width: 30rem;
+      padding: clamp(1.1rem, 2.5vw, 1.5rem);
+      border: 1px solid var(--line); border-radius: 18px;
+      background: linear-gradient(180deg, rgba(20, 20, 22, 0.85), rgba(20, 20, 22, 0.55));
+      -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+      text-align: left;
+    }
+    .ref__title {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      margin: 0 0 0.9rem;
+      font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--ink-3);
+    }
+    .ref__title b { font-weight: 500; color: var(--accent); }
+    .ref__list { margin: 0; display: grid; }
+    .ref__row {
+      display: grid; grid-template-columns: 6.5rem minmax(0, 1fr);
+      align-items: center; gap: 0.75rem;
+      min-height: 44px; padding-block: 0.35rem;
+      border-top: 1px solid var(--line);
+    }
+    .ref__row dt { font-size: 0.8125rem; color: var(--ink-3); }
+    .ref__row dd {
+      margin: 0; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      min-width: 0;
+      font-family: var(--mono); font-size: 0.8125rem; color: var(--ink);
+    }
+    .ref__row dd > :first-child { overflow-wrap: anywhere; }
+    .copy {
+      flex-shrink: 0;
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      min-height: 32px; padding: 0 0.7rem;
+      border: 1px solid var(--line-strong); border-radius: 999px;
+      background: transparent; cursor: pointer;
+      font-family: var(--sans); font-size: 0.75rem; font-weight: 600; color: var(--ink-2);
+      transition: border-color 0.3s, color 0.3s, background-color 0.3s;
+    }
+    .copy[hidden] { display: none; }
+    .copy:hover { color: var(--ink); border-color: var(--ink-2); }
+    .copy.is-done { color: var(--signal); border-color: var(--signal); }
+    .copy svg { width: 13px; height: 13px; }
+    .ref__note { margin: 0.9rem 0 0; font-size: 0.875rem; line-height: 1.55; color: var(--ink-2); }
+    .ref__note a { color: var(--ink); text-underline-offset: 3px; text-decoration-color: var(--accent); }
+    .ref__note a:hover { color: var(--accent); }
+
+    /* ---------- Footer ---------- */
+    .foot {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 0.5rem 1.5rem;
+      padding: 0 var(--pad) var(--pad);
+      font-size: 0.8125rem; color: var(--ink-3);
+    }
+    .foot__meta { margin: 0; font-family: var(--mono); font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .foot nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.25rem; }
+    .foot a {
+      display: inline-flex; align-items: center; min-height: 44px;
+      text-decoration: none; color: var(--ink-2);
+      background: linear-gradient(currentColor, currentColor) 0 calc(50% + 0.75em) / 0 1px no-repeat;
+      transition: background-size 0.4s var(--ease-io), color 0.3s;
+    }
+    .foot a:hover { color: var(--ink); background-size: 100% 1px; }
+
+    /* ---------- Breakpoints ---------- */
+
+    /* ≥ 960px: copy left, details card right, under the big numerals. */
+    @media (min-width: 960px) {
+      .stage__body {
+        grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.85fr);
+        align-items: end; justify-items: stretch; text-align: left;
+      }
+      .message { justify-items: start; }
+      .actions { justify-content: flex-start; }
+      .ref { justify-self: end; }
+    }
+
+    /* Wide but short (laptops ≤ 820px tall): compact so it fits one screen. */
+    @media (min-width: 960px) and (max-height: 820px) {
+      .code { font-size: clamp(6.5rem, 30vh, 22rem); font-size: clamp(6.5rem, 30svh, 22rem); }
+      .stage { gap: clamp(1rem, 2.4vh, 2rem); }
+      .ref { padding: 1rem 1.25rem; }
+      .ref__row { min-height: 40px; padding-block: 0.2rem; }
+      .ref__note { margin-top: 0.6rem; }
+    }
+
+    /* ≥ 1600px: give the wide canvas more air. */
+    @media (min-width: 1600px) {
+      :root { --maxw: 1440px; }
+      .bg__label { display: block; }
+    }
+
+    /* ≤ 640px: tighter vertical rhythm. */
+    @media (max-width: 640px) {
+      .eyebrow { font-size: 0.6875rem; letter-spacing: 0.12em; }
+      .foot { justify-content: center; text-align: center; }
+      .foot nav { justify-content: center; }
+    }
+
+    /* ≤ 520px: buttons become full-width, primary first. */
+    @media (max-width: 520px) {
+      .actions { display: grid; grid-template-columns: minmax(0, 1fr); width: 100%; }
+      .btn { width: 100%; }
+      .ref__row { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; padding-block: 0.6rem; }
+    }
+
+    /* ≤ 360px: smallest phones. */
+    @media (max-width: 360px) {
+      .code { font-size: 5.5rem; }
+      .pill__text { display: none; }
+      .pill { padding: 0 0.8rem; }
+    }
+
+    /* Short landscape (phones sideways): shrink numerals, two columns. */
+    @media (max-height: 520px) and (orientation: landscape) {
+      .stage { gap: 1rem; padding-block: 1rem; }
+      .code { font-size: clamp(4rem, 30vh, 9rem); }
+      .stage__body { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); align-items: start; text-align: left; justify-items: stretch; }
+      .message { justify-items: start; }
+      .actions { display: flex; justify-content: flex-start; width: auto; }
+      .btn { width: auto; }
+      .ref__row { grid-template-columns: minmax(0, 1fr); gap: 0.15rem; padding-block: 0.4rem; }
+    }
+
+    /* ---------- Motion & input preferences ---------- */
+    @media (prefers-reduced-motion: reduce) {
+      .bg__grain, .pill__dot::after { animation: none; }
+      .btn::before, .btn__label > span, .btn svg, .foot a, .pill svg { transition: none; }
+      .btn:hover .btn__label > span, .btn:focus-visible .btn__label > span { transform: none; }
+      .btn__label > span::after { display: none; }
+    }
+    @media (hover: none) {
+      .btn__label > span::after { display: none; }
+      .btn:hover .btn__label > span { transform: none; }
+    }
+    @media (forced-colors: active) {
+      .digit--hollow { color: CanvasText; -webkit-text-stroke: 0; }
+      .digit::before, .digit::after, .bg { display: none; }
+      .btn { border: 1px solid ButtonText; }
+    }
+  </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <!-- Decorative kinetic background -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg__spot"></div>
+    <div class="bg__grid"></div>
+    <div class="marquees"><div class="marquees__inner">
+      <div class="marquee marquee--outline" data-dir="-1" data-duration="60">
+        <div class="marquee__track"><div class="marquee__group"><span>Internal server error</span><i></i><span>Error 500</span><i></i></div></div>
+      </div>
+      <div class="marquee marquee--fill" data-dir="1" data-duration="75">
+        <div class="marquee__track"><div class="marquee__group"><span>Something broke</span><i></i><span>Hold tight</span><i></i></div></div>
+      </div>
+      <div class="marquee marquee--accent" data-dir="-1" data-duration="50">
+        <div class="marquee__track"><div class="marquee__group"><span>Error 500</span><i></i><span>Unexpected condition</span><i></i></div></div>
+      </div>
+    </div></div>
+    <div class="bg__grain"></div>
+    <span class="bg__label bg__label--l">HTTP/1.1 500 Internal Server Error</span>
+    <span class="bg__label bg__label--r">ERR_INTERNAL · Request not completed</span>
+  </div>
+
+  <header class="topbar">
+    <a class="logo-slot" href="/" aria-label="Go to homepage" data-reveal>
+      <!-- ============================================================
+           LOGO PLACEHOLDER
+           Replace the <span> below with your logo, e.g.
+           <img src="/logo.svg" alt="Your Company" width="160" height="44">
+           Use an absolute path or inline <svg> — this page is served
+           from whichever URL failed, so relative paths will break.
+           ============================================================ -->
+      <span class="logo-slot__placeholder">Your logo</span>
+    </a>
+
+    <!-- Point this to your status page (e.g. status.yourdomain.com) -->
+    <a class="pill" href="#" data-reveal>
+      <span class="pill__dot" aria-hidden="true"></span>
+      <span class="pill__text">System status</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+    </a>
+  </header>
+
+  <main id="main" class="stage">
+    <p class="eyebrow" data-reveal>
+      <span class="eyebrow__code">Error 500</span>
+      <span class="eyebrow__rule" aria-hidden="true"></span>
+      <span>Internal server error</span>
+    </p>
+
+    <div class="code" aria-hidden="true">
+      <span class="digit" data-char="5">5</span><span class="digit digit--hollow" data-char="0">0</span><span class="digit" data-char="0">0</span>
+    </div>
+
+    <div class="stage__body">
+      <div class="message">
+        <h1 class="headline" data-split>Something broke on <em>our</em> end.</h1>
+        <p class="lede" data-reveal>
+          Our server ran into an unexpected problem and couldn’t finish your request.
+          It’s not something you did. Try again in a moment, or head back to the homepage.
+        </p>
+
+        <div class="actions" data-reveal>
+          <a class="btn btn--primary" href="/" aria-label="Back to homepage" data-magnetic>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+            <span class="btn__label"><span data-text="Back to homepage">Back to homepage</span></span>
+            <svg class="i-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+          </a>
+          <!-- Needs JS; revealed by script. -->
+          <button class="btn" type="button" aria-label="Try again" data-retry data-magnetic hidden>
+            <svg class="i-retry" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+            <span class="btn__label"><span data-text="Try again">Try again</span></span>
+          </button>
+          <button class="btn btn--ghost" type="button" aria-label="Go back to previous page" data-back hidden>
+            <svg class="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 18l-6-6 6-6"/></svg>
+            <span class="btn__label"><span data-text="Previous page">Previous page</span></span>
+          </button>
+        </div>
+      </div>
+
+      <aside class="ref" aria-labelledby="ref-title" data-reveal>
+        <p class="ref__title" id="ref-title"><span>Error details</span><b>HTTP 500</b></p>
+        <dl class="ref__list">
+          <div class="ref__row">
+            <dt>Reference</dt>
+            <dd>
+              <!-- Server: render your real request/trace ID here and add data-server="true"
+                   so support can match it to your logs. Otherwise a client-side ID is shown. -->
+              <code data-ref>—</code>
+              <button class="copy" type="button" data-copy hidden>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+                <span data-copy-label>Copy</span>
+              </button>
+            </dd>
+          </div>
+          <div class="ref__row">
+            <dt>Time</dt>
+            <dd><time data-time>—</time></dd>
+          </div>
+          <div class="ref__row">
+            <dt>Page</dt>
+            <dd><span data-path>—</span></dd>
+          </div>
+        </dl>
+        <p class="ref__note">
+          Still not working? <a href="mailto:support@example.com" data-support>Contact support</a>
+          and include the reference above so we can find what went wrong.
+        </p>
+        <p class="sr-only" aria-live="polite" data-copy-status></p>
+      </aside>
+    </div>
+  </main>
+
+  <footer class="foot">
+    <p class="foot__meta" data-reveal>Status 500 · Request not completed</p>
+    <nav aria-label="Help" data-reveal>
+      <a href="#">Help center</a>
+      <a href="/">Homepage</a>
+    </nav>
+    <!-- Copyright slot: reserved — add your footer credit here if wanted. -->
+  </footer>
+
+  <script>
+    /* Copyright © 2026 CV SATRIA TEKNOLOGI. All rights reserved. (cvsatriateknologi.com) */
+    document.addEventListener('DOMContentLoaded', function () {
+      'use strict';
+
+      var root = document.documentElement;
+      var $ = function (s, c) { return (c || document).querySelector(s); };
+      var $$ = function (s, c) { return Array.prototype.slice.call((c || document).querySelectorAll(s)); };
+
+      /* ---------- Error details (work without GSAP) ---------- */
+      var refEl = $('[data-ref]');
+      if (refEl && refEl.getAttribute('data-server') !== 'true') {
+        var rand = '';
+        try {
+          var buf = new Uint8Array(4);
+          crypto.getRandomValues(buf);
+          rand = Array.prototype.map.call(buf, function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+        } catch (e) { rand = Math.random().toString(16).slice(2, 10); }
+        refEl.textContent = 'ERR-' + Date.now().toString(36).toUpperCase() + '-' + rand.toUpperCase();
+      }
+
+      var timeEl = $('[data-time]');
+      if (timeEl) {
+        var now = new Date();
+        timeEl.dateTime = now.toISOString();
+        timeEl.textContent = now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+      }
+
+      var pathEl = $('[data-path]');
+      if (pathEl) pathEl.textContent = location.pathname || '/';
+
+      // Pre-fill the support email with the reference.
+      var support = $('[data-support]');
+      if (support && refEl && support.href.indexOf('mailto:') === 0) {
+        var body = 'Reference: ' + refEl.textContent + '\nTime: ' + (timeEl ? timeEl.textContent : '') + '\nPage: ' + location.href;
+        support.href = support.href.split('?')[0] + '?subject=' + encodeURIComponent('Error 500 — ' + refEl.textContent) + '&body=' + encodeURIComponent(body);
+      }
+
+      /* ---------- Buttons ---------- */
+      var retry = $('[data-retry]');
+      if (retry) {
+        retry.hidden = false;
+        retry.addEventListener('click', function () {
+          retry.disabled = true;
+          retry.setAttribute('aria-busy', 'true');
+          location.reload();
+        });
+      }
+
+      var back = $('[data-back]');
+      if (back && history.length > 1 && document.referrer) {
+        back.hidden = false;
+        back.addEventListener('click', function () { history.back(); });
+      }
+
+      var copyBtn = $('[data-copy]');
+      var copyLabel = $('[data-copy-label]');
+      var copyStatus = $('[data-copy-status]');
+      if (copyBtn && refEl) {
+        copyBtn.hidden = false;
+        var resetTimer;
+        copyBtn.addEventListener('click', function () {
+          var text = refEl.textContent.trim();
+          var done = function (ok) {
+            copyLabel.textContent = ok ? 'Copied' : 'Copy manually';
+            copyStatus.textContent = ok ? 'Reference copied to clipboard' : 'Copy failed. Select the reference and copy it manually.';
+            copyBtn.classList.toggle('is-done', ok);
+            if (!ok) {
+              var range = document.createRange();
+              range.selectNodeContents(refEl);
+              var sel = getSelection(); sel.removeAllRanges(); sel.addRange(range);
+            }
+            clearTimeout(resetTimer);
+            resetTimer = setTimeout(function () {
+              copyLabel.textContent = 'Copy';
+              copyBtn.classList.remove('is-done');
+            }, 2200);
+          };
+          if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+          } else {
+            done(false);
+          }
+        });
+      }
+
+      /* ---------- Split headline into masked words ---------- */
+      $$('[data-split]').forEach(function (el) {
+        var walk = function (node) {
+          $$(':scope > *', node).forEach(walk);
+          Array.prototype.slice.call(node.childNodes).forEach(function (child) {
+            if (child.nodeType !== 3) return;
+            var frag = document.createDocumentFragment();
+            child.textContent.split(/(\s+)/).forEach(function (part) {
+              if (!part) return;
+              if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(' ')); return; }
+              var w = document.createElement('span'); w.className = 'w';
+              var inner = document.createElement('span'); inner.textContent = part;
+              w.appendChild(inner); frag.appendChild(w);
+            });
+            node.replaceChild(frag, child);
+          });
+        };
+        walk(el);
+      });
+
+      /* ---------- Motion ---------- */
+      if (!window.gsap) { root.classList.remove('js'); return; }
+      var gsap = window.gsap;
+
+      var digits = $$('.digit');
+      var words = $$('.headline .w > span');
+      var revealEls = $$('[data-reveal]');
+
+      var mm = gsap.matchMedia();
+      mm.add({
+        motion: '(prefers-reduced-motion: no-preference)',
+        reduce: '(prefers-reduced-motion: reduce)',
+        fine: '(hover: hover) and (pointer: fine)'
+      }, function (ctx) {
+        var c = ctx.conditions;
+
+        if (c.reduce) {
+          gsap.set(revealEls.concat(digits, $('.headline')), { autoAlpha: 1 });
+          return;
+        }
+
+        var cleanups = [];
+        var marqueeTweens = buildMarquees(cleanups);
+
+        /* Intro: numerals rise and "inflate" through the variable axes. */
+        var tl = gsap.timeline({ defaults: { ease: 'expo.out' } });
+        tl.set(digits, { autoAlpha: 1, '--wght': 100, '--wdth': 62 })
+          .from(digits, { yPercent: 105, rotateX: -85, duration: 1.4, stagger: 0.09 }, 0.1)
+          .to(digits, { '--wght': 800, '--wdth': 100, duration: 1.8, stagger: 0.09, ease: 'power3.inOut' }, 0.15)
+          .from('.marquees__inner', { autoAlpha: 0, scale: 1.08, duration: 2, ease: 'power2.out' }, 0)
+          .fromTo('.topbar [data-reveal]', { autoAlpha: 0, y: -16 }, { autoAlpha: 1, y: 0, duration: 1, stagger: 0.08 }, 0.3)
+          .fromTo('.eyebrow', { autoAlpha: 0, letterSpacing: '0.5em' }, { autoAlpha: 1, letterSpacing: '0.14em', duration: 1.4 }, 0.35)
+          .set('.headline', { autoAlpha: 1 }, 0.75)
+          .from(words, { yPercent: 115, rotate: 6, duration: 1.1, stagger: 0.05 }, 0.75)
+          .fromTo('.lede', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 1 }, 1)
+          .fromTo('.actions', { autoAlpha: 0, y: 18 }, { autoAlpha: 1, y: 0, duration: 1 }, 1.1)
+          .from('.actions > .btn:not([hidden])', { scale: 0.9, duration: 0.9, stagger: 0.07, ease: 'back.out(2)' }, 1.1)
+          .fromTo('.ref', { autoAlpha: 0, y: 30, clipPath: 'inset(0 0 100% 0 round 18px)' }, { autoAlpha: 1, y: 0, clipPath: 'inset(0 0 0% 0 round 18px)', duration: 1.2 }, 1.15)
+          .from('.ref__row', { autoAlpha: 0, x: -12, duration: 0.8, stagger: 0.06 }, 1.35)
+          .fromTo('.foot [data-reveal]', { autoAlpha: 0 }, { autoAlpha: 1, duration: 1, stagger: 0.08 }, 1.4)
+          .add(function () {
+            startField(c.fine, cleanups);
+            scheduleGlitch(cleanups);
+          });
+
+        bindVelocity(marqueeTweens, cleanups);
+        bindSpotlight(cleanups);
+        if (c.fine) bindMagnetic(cleanups);
+
+        return function () { cleanups.forEach(function (fn) { fn(); }); };
+      });
+
+      /* Marquees: fill each row past the viewport, loop at -50%. */
+      function buildMarquees(cleanups) {
+        var rows = $$('.marquee');
+        var fill = function () {
+          rows.forEach(function (row) {
+            var track = $('.marquee__track', row);
+            var groups = $$('.marquee__group', track);
+            var group = groups[0];
+            if (!group.dataset.base) group.dataset.base = group.innerHTML;
+            groups.slice(1).forEach(function (g) { g.remove(); });
+            group.innerHTML = group.dataset.base;
+            var guard = 0;
+            while (group.offsetWidth < window.innerWidth * 1.25 && guard++ < 24) {
+              group.insertAdjacentHTML('beforeend', group.dataset.base);
+            }
+            track.appendChild(group.cloneNode(true));
+          });
+        };
+        fill();
+
+        var tweens = rows.map(function (row) {
+          var dir = Number(row.dataset.dir) || -1;
+          var track = $('.marquee__track', row);
+          return gsap.fromTo(track,
+            { xPercent: dir < 0 ? 0 : -50 },
+            { xPercent: dir < 0 ? -50 : 0, duration: Number(row.dataset.duration) || 60, ease: 'none', repeat: -1 });
+        });
+
+        var lastW = window.innerWidth, t;
+        var onResize = function () {
+          clearTimeout(t);
+          t = setTimeout(function () {
+            if (window.innerWidth === lastW) return;
+            lastW = window.innerWidth;
+            fill();
+          }, 200);
+        };
+        window.addEventListener('resize', onResize);
+        cleanups.push(function () { window.removeEventListener('resize', onResize); clearTimeout(t); });
+        return tweens;
+      }
+
+      /* Pointer / scroll velocity speeds up and skews the marquees. */
+      function bindVelocity(tweens, cleanups) {
+        var boost = 0;
+        var skew = gsap.quickTo('.marquees__inner', 'skewX', { duration: 0.6, ease: 'power3.out' });
+        var add = function (v) { boost = Math.min(boost + v, 8); };
+        var onMove = function (e) { add(Math.hypot(e.movementX || 0, e.movementY || 0) * 0.025); };
+        var onWheel = function (e) { add(Math.abs(e.deltaY) * 0.01); };
+        var tick = function () {
+          boost *= 0.92;
+          if (boost < 0.001) boost = 0;
+          tweens.forEach(function (tw) { tw.timeScale(1 + boost); });
+          skew(-boost * 1.4);
+        };
+        window.addEventListener('pointermove', onMove, { passive: true });
+        window.addEventListener('wheel', onWheel, { passive: true });
+        gsap.ticker.add(tick);
+        cleanups.push(function () {
+          window.removeEventListener('pointermove', onMove);
+          window.removeEventListener('wheel', onWheel);
+          gsap.ticker.remove(tick);
+        });
+      }
+
+      /* Background spotlight follows the pointer. */
+      function bindSpotlight(cleanups) {
+        var bg = $('.bg');
+        var pos = { x: window.innerWidth / 2, y: window.innerHeight * 0.4 };
+        var apply = function () { bg.style.setProperty('--mx', pos.x + 'px'); bg.style.setProperty('--my', pos.y + 'px'); };
+        var onMove = function (e) {
+          gsap.to(pos, { x: e.clientX, y: e.clientY, duration: 0.9, ease: 'power3.out', overwrite: true, onUpdate: apply });
+        };
+        window.addEventListener('pointermove', onMove, { passive: true });
+        cleanups.push(function () { window.removeEventListener('pointermove', onMove); });
+      }
+
+      /* Kinetic numerals: weight/width respond to pointer proximity,
+         and breathe in a wave when the pointer is idle (or on touch). */
+      function startField(fine, cleanups) {
+        var state = digits.map(function () { return { w: 800, d: 100 }; });
+        var centers = [];
+        var px = null, py = null, lastMove = 0;
+
+        var measure = function () {
+          centers = digits.map(function (el) {
+            var r = el.getBoundingClientRect();
+            return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+          });
+        };
+        var onMove = function (e) {
+          px = e.clientX; py = e.clientY; lastMove = performance.now();
+          measure();
+        };
+        window.addEventListener('pointermove', onMove, { passive: true });
+
+        var tick = function (time) {
+          var idle = px === null || performance.now() - lastMove > 2500;
+          var reach = Math.max(window.innerWidth, window.innerHeight) * 0.45;
+          digits.forEach(function (el, i) {
+            var tw, td;
+            if (idle || !centers[i]) {
+              var s = Math.sin(time * 1.6 - i * 1.1);
+              tw = 600 + s * 280;
+              td = 100 + s * 22;
+            } else {
+              var f = Math.max(0, 1 - Math.hypot(px - centers[i].x, py - centers[i].y) / reach);
+              f = f * f * (3 - 2 * f);
+              tw = 250 + f * 650;
+              td = 72 + f * 53;
+            }
+            var st = state[i];
+            st.w += (tw - st.w) * 0.07;
+            st.d += (td - st.d) * 0.07;
+            el.style.setProperty('--wght', st.w.toFixed(1));
+            el.style.setProperty('--wdth', st.d.toFixed(1));
+          });
+        };
+        gsap.ticker.add(tick);
+        cleanups.push(function () {
+          window.removeEventListener('pointermove', onMove);
+          gsap.ticker.remove(tick);
+        });
+      }
+
+      /* Occasional RGB-split glitch on a random numeral. */
+      function scheduleGlitch(cleanups) {
+        var call;
+        var run = function () {
+          var el = digits[gsap.utils.random(0, digits.length - 1, 1)];
+          var r = gsap.utils.random;
+          gsap.timeline({ onComplete: function () { call = gsap.delayedCall(r(2.5, 5.5), run); } })
+            .set(el, { '--glitch': 1 })
+            .to(el, { '--gx': r(4, 14) + 'px', '--c1': r(0, 40) + '%', '--c2': r(30, 70) + '%', '--c3': r(40, 80) + '%', '--c4': r(0, 30) + '%', x: r(-6, 6), duration: 0.06, ease: 'steps(1)' })
+            .to(el, { '--gx': r(-12, -3) + 'px', '--c1': r(20, 60) + '%', '--c2': r(10, 50) + '%', '--c3': r(5, 40) + '%', '--c4': r(30, 70) + '%', x: r(-4, 4), skewX: r(-8, 8), duration: 0.06, ease: 'steps(1)' })
+            .to(el, { '--gx': r(2, 8) + 'px', x: 0, skewX: 0, duration: 0.05, ease: 'steps(1)' })
+            .set(el, { '--glitch': 0, '--gx': '0px' });
+        };
+        call = gsap.delayedCall(1.2, run);
+        cleanups.push(function () { if (call) call.kill(); });
+      }
+
+      /* Magnetic buttons (mouse/trackpad only). */
+      function bindMagnetic(cleanups) {
+        $$('[data-magnetic]').forEach(function (btn) {
+          var xTo = gsap.quickTo(btn, 'x', { duration: 0.5, ease: 'power3.out' });
+          var yTo = gsap.quickTo(btn, 'y', { duration: 0.5, ease: 'power3.out' });
+          var onMove = function (e) {
+            var r = btn.getBoundingClientRect();
+            xTo((e.clientX - (r.left + r.width / 2)) * 0.25);
+            yTo((e.clientY - (r.top + r.height / 2)) * 0.4);
+          };
+          var onLeave = function () {
+            gsap.to(btn, { x: 0, y: 0, duration: 0.9, ease: 'elastic.out(1, 0.4)', overwrite: true });
+          };
+          btn.addEventListener('pointermove', onMove);
+          btn.addEventListener('pointerleave', onLeave);
+          cleanups.push(function () {
+            btn.removeEventListener('pointermove', onMove);
+            btn.removeEventListener('pointerleave', onLeave);
+            gsap.set(btn, { clearProps: 'transform' });
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>
